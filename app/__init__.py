@@ -27,6 +27,45 @@ app = Flask(__name__)
 def show_welcome():
     return render_template("pages/welcome.jinja")
 
+#-----------------------------------------------------------
+# singnup page
+#-----------------------------------------------------------
+@app.get("/user/new")
+def show_singnup_form():
+    return render_template("pages/user_form.jinja")
+
+#-----------------------------------------------------------
+# handle user singup
+#-----------------------------------------------------------
+@app.get("/user")
+def prosess_new_user():
+  forename = request.form.get('forename', '').strip()
+  surname  = request.form.get('surname',  '').strip()
+  username = request.form.get('username', '').strip().lower()
+  password = request.form.get('password', '').strip()
+
+  with connect_db() as db:
+        sql = "SELECT id FROM users WHERE username=?"
+        params = (username,)
+        user = db.execute(sql, params).fetchone()
+
+        if user:
+            flash(f"Username '{username}' already exists", "error")
+            return redirect("/user/new")
+
+        pass_hash = generate_password_hash(password)
+
+        sql = """
+            INSERT INTO users (forename, surname, username, password_hash)
+            VALUES (?, ?, ?, ?)
+        """
+        params = (forename, surname, username, pass_hash)
+        db.execute(sql, params)
+
+        flash("Account created. Please login", "success")
+        return redirect("/login")
+
+
 
 #-----------------------------------------------------------
 # Creature list page - Show all the creatures
@@ -42,8 +81,15 @@ def show_all_creatures():
         creatures = db.execute(sql, params).fetchall()
 
         return render_template("pages/creature_list.jinja", creatures=creatures)
-
-
+#----------------------------------------------------------
+#creating login page
+#----------------------------------------------------------
+@app.get("/admin")
+@login_required
+def admin_page():
+    # Can only access this route if logged in
+    ...
+            
 #-----------------------------------------------------------
 # Help page - Show some help
 #-----------------------------------------------------------
