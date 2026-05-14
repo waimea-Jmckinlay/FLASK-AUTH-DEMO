@@ -7,9 +7,21 @@ login page
 
 {% block content %}
 
-    <h2>Help</h2>
+    <h2>login</h2>
 
-    <p>The route for this page triggers some flash messages...</p>
+<form method="post" action="/login">
+    <label>
+        Username
+        <input name="username" type="text" required>
+    </label>
+
+    <label>
+        Password
+        <input name="password" type="password" required>
+    </label>
+
+    <button>Login</button>
+</form>
 
 {% endblock %}
 

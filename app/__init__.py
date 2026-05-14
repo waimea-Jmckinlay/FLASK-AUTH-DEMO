@@ -37,7 +37,7 @@ def show_singnup_form():
 #-----------------------------------------------------------
 # handle user singup
 #-----------------------------------------------------------
-@app.get("/user")
+@app.post("/user")
 def prosess_new_user():
   forename = request.form.get('forename', '').strip()
   surname  = request.form.get('surname',  '').strip()
@@ -65,10 +65,48 @@ def prosess_new_user():
         flash("Account created. Please login", "success")
         return redirect("/login")
 
-
-
 #-----------------------------------------------------------
-# Creature list page - Show all the creatures
+# get login route
+#-----------------------------------------------------------
+@app.get("/login")
+def login_user():
+    return render_template("pages/login.jinja")
+#-----------------------------------------------------------
+# login post route  
+#-----------------------------------------------------------  
+@app.post("/login")
+def login_user():
+    username = request.form.get('username', '').strip().lower()
+    password = request.form.get('password', '').strip()
+
+    with connect_db() as db:
+        sql = """
+            SELECT id, forename, surname, pass_hash
+            FROM user
+            WHERE username=?
+        """
+        params = (username,)
+        user = db.execute(sql, params).fetchone()
+
+        if not user:
+            flash(f"Unknown user", "error")
+            return redirect("/login")
+
+        if not check_password_hash(user["pass_hash"], password):
+            flash(f"Incorrect password", "error")
+            return redirect("/login")
+
+        session["logged_in"] = True
+        session["user"] = {
+            "username": username,
+            "forename": user["forename"],
+            "surname":  user["surname"],
+        }
+
+        flash("Login successful", "success")
+        return redirect("/")  
+#-----------------------------------------------------------
+# Creature list page - Show all the 
 #-----------------------------------------------------------
 @app.get("/creatures")
 def show_all_creatures():
