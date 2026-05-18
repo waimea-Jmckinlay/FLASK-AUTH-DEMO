@@ -69,7 +69,7 @@ def prosess_new_user():
 # get login route
 #-----------------------------------------------------------
 @app.get("/login")
-def login_user():
+def show_login_user():
     return render_template("pages/login.jinja")
 #-----------------------------------------------------------
 # login post route  
@@ -81,8 +81,8 @@ def login_user():
 
     with connect_db() as db:
         sql = """
-            SELECT id, forename, surname, pass_hash
-            FROM user
+            SELECT id, forename, surname, password_hash
+            FROM users
             WHERE username=?
         """
         params = (username,)
@@ -92,7 +92,7 @@ def login_user():
             flash(f"Unknown user", "error")
             return redirect("/login")
 
-        if not check_password_hash(user["pass_hash"], password):
+        if not check_password_hash(user["password_hash"], password):
             flash(f"Incorrect password", "error")
             return redirect("/login")
 
@@ -105,6 +105,35 @@ def login_user():
 
         flash("Login successful", "success")
         return redirect("/")  
+#------------------------------------------------------------------
+# admin login 
+#------------------------------------------------------------------
+@app.post("/login")
+def login_admin():
+    password = request.form.get('password', '').strip()
+
+    load_dotenv()
+    ADMIN_PASSWORD = getenv("ADMIN_PASSWORD", "")
+    if not ADMIN_PASSWORD:
+        flash(f"No admin password set!", "error")
+        return redirect("/")
+
+    if password == ADMIN_PASSWORD:
+        session["logged_in"] = True
+        flash(f"Login successful", "success")
+        return redirect("/")
+    else:
+        session.clear()
+        flash(f"Incorrect password", "error")
+        return redirect("/")                
+#-----------------------------------------------------------
+# logout route
+#-----------------------------------------------------------
+@app.get("/logout")
+def logout_admin():
+    session.clear()
+    flash(f"You have been logged out", "success")
+    return redirect("/")        
 #-----------------------------------------------------------
 # Creature list page - Show all the 
 #-----------------------------------------------------------
@@ -120,7 +149,7 @@ def show_all_creatures():
 
         return render_template("pages/creature_list.jinja", creatures=creatures)
 #----------------------------------------------------------
-#creating login page
+#Add the @login_required decorator to required routes
 #----------------------------------------------------------
 @app.get("/admin")
 @login_required
