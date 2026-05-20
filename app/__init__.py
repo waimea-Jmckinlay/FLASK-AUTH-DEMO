@@ -98,6 +98,7 @@ def login_user():
 
         session["logged_in"] = True
         session["user"] = {
+            "id":       user["id"],
             "username": username,
             "forename": user["forename"],
             "surname":  user["surname"],
@@ -156,7 +157,57 @@ def show_all_creatures():
 def admin_page():
     # Can only access this route if logged in
     ...
-            
+#----------------------------------------------------------
+# message getting
+#-----------------------------------------------------------
+@app.get("/message/new")
+@login_required
+def message_page():
+    return render_template("pages/message_form.jinja")
+
+#----------------------------------------------------------
+# message posting
+#-----------------------------------------------------------
+@app.post("/message")
+def add_note():
+    # Get form data
+    title    = request.form.get('title', '').strip()
+    body     = request.form.get('body', '').strip()
+
+    # Validate data
+    if not title:
+        flash("Title is required", "error")
+        return redirect("/message/new")
+
+    if len(title) > 40:
+        flash("Title is too long (max 40 chars)", "error")
+        return redirect("/message/new")
+
+
+    # Escape text inputs
+    title = html.escape(title)
+    body = html.escape(body)
+
+    # User ID is in the session
+    user_id = session["user"]["id"]
+
+    # Add to the database
+    with connect_db() as db:
+        sql = """
+            INSERT INTO messages (title, body, user_id)
+            VALUES (?, ?, ?)
+        """
+        params = (title, body, user_id)
+        db.execute(sql, params)
+
+        flash(f"Message added")
+        return redirect("/messages")
+
+#-----------------------------------------------------------
+# message obtaining
+#-----------------------------------------------------------
+@app.get("/message")
+
 #-----------------------------------------------------------
 # Help page - Show some help
 #-----------------------------------------------------------

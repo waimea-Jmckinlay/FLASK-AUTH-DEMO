@@ -36,14 +36,14 @@ VALUES ("Test", "User", "test",
     """
 
 
-class messageTable:
+class MessageTable:
 
-    NAME = "message"
+    NAME = "messages"
 
     SCHEMA = """
-        CREATE TABLE message (
+        CREATE TABLE messages (
             id      INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_id TEXT NOT NULL,
+            user_id INTEGER NOT NULL,
             title    TEXT NOT NULL,
             body   Text NOT NULL,
 
@@ -53,13 +53,13 @@ class messageTable:
     """
 
     SEED_DATA = """
-INSERT INTO note(title, body, pinned, user_id)
-VALUES ("Welcome!",        "This is a demo application", 1, 1),
-       ("Getting Started", "Use this template to start", 1, 1),
-       ("Pinned Note",     "Pinned notes appear at top", 1, 1),
-       ("Sample Note",     "This is just a sample note", 0, 1),
-       ("Sample Note",     "This is just a sample note", 0, 1),
-       ("Sample Note",     "This is just a sample note", 0, 1) 
+INSERT INTO messages (title, body,  user_id)
+VALUES ("Welcome!",        "This is a demo application", 1),
+       ("Getting Started", "Use this template to start", 1),
+       ("Pinned Note",     "Pinned notes appear at top", 1),
+       ("Sample Note",     "This is just a sample note", 1),
+       ("Sample Note",     "This is just a sample note", 1),
+       ("Sample Note",     "This is just a sample note", 1) 
     """
 
 
@@ -84,6 +84,7 @@ VALUES ("Welcome!",        "This is a demo application", 1, 1),
 
 TABLES = [
     UserTable,
+    MessageTable,
     # Add more tables here...
 ]
 

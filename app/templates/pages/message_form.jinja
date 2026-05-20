@@ -1,0 +1,35 @@
+{#=====================================================
+  message page
+=====================================================#}
+
+{% extends 'pages/base.jinja' %}
+
+
+{% block content %}
+
+<form method="post" action="/message">
+    <h3>New Note</h3>
+
+    <label>
+        Title
+        <input name="title" type="text" placeholder="e.g. Feed cat" required>
+    </label>
+
+    <label>
+        Body
+        <textarea name="body" placeholder="e.g. Two scoops" required></textarea>
+    </label>
+
+    
+    <button>
+    send message 
+    </button>
+
+</form>
+
+    
+
+
+
+{% endblock %}
+

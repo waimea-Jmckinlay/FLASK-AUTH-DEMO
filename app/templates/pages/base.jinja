@@ -34,9 +34,19 @@
         <nav>
             <a href="/">Home</a>
             <a href="/user/new">make account</a>
-            <a href="/login">login</a>
-            <a href="/help">Help</a>
+        {% if session.logged_in %}
+            Welcome, {{ session.user.forename }}!
+            <a href="/message/new">message</a>
+            <a href="/logout">Logout</a>
+        {% else %}
+            <a href="/login">Login</a>
+            <a href="/user/new">Sign-Up</a>
+        {% endif %}
         </nav>
+
+
+       
+
     </header>
 
     {# Show flash messages from any previous events #}

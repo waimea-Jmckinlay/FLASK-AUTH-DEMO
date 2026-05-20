@@ -4,21 +4,44 @@
 ===========================================================*/
 
 :root {
+
+    --base-col:     #355;
+    --accent-col:    #e43;
+
+
+    --baes-col-lighter: color-mix(in srgb, var(--base-col), #fff 50%);
+    --base-col-light:  color-mix(in srgb, var(--base-col), #fff 20%);
+    --base-col-dark: color-mix(in srgb, var(--base-col), #000 20%);
+    --baes-col-darkest:  color-mix(in srgb, var(--base-col), #000 50%);
+
     --text-col:         #244;
+    --text-col-inv:     #fff; 
 
-    --back-col:         #dff;
-    --back-col-dark:    #bdd;
+    --page-bg:     var(--baes-col-lighter);
 
-    --border-col:       #355;
+    --panel-bg:    var(--base-col-light);
 
-    --accent-col:       #e43;
+
+
+    --border-col:       var(--base-col-dark);
+
+    --link-col:   var(--accent-col);
+    --button-col: var(--accent-col);
+    --button-bg:  var(--accent-col);
+
+
+    --padding: 1rem;
+    --gap:1rem;
+    --padding-sam: 0.5rem;
+    --content-width:60rem;
+
 }
 
 
 /* Overall Layout -----------------------------------------------*/
 
 html {
-    background-color: var(--back-col);
+    background-color: var(--page-bg);
     color: var(--text-col);
 
     font-family: system-ui, sans-serif;
@@ -31,9 +54,9 @@ body {
 
 
 main {
-    max-width: 60rem;
+    max-width: var(--content-width);
     margin-inline: auto;
-    padding: 1rem;
+    padding: var( --padding );
 }
 
 
@@ -57,10 +80,10 @@ body > header {
 
     nav {
         display: flex;
-        gap: 1rem;
+        gap: var(--gap);
 
         a {
-            color: var(--accent-col);
+            color: var(--link-col);
         }
     }
 }
@@ -109,5 +132,7 @@ main > h2 {
         }
     }
 }
+
+
 
 
