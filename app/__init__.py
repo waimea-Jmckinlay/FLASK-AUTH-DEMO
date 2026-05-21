@@ -1,50 +1,63 @@
-#===========================================================
+# ===========================================================
 # APP NAME HERE
 # By YOUR NAME HERE
-#===========================================================
+# ===========================================================
 
-from flask import Flask, request, session, render_template, flash, redirect, send_file, make_response
-from werkzeug.security import generate_password_hash, check_password_hash
-from dotenv import load_dotenv
-from os import getenv
-from io import BytesIO
 import html
-from app.helpers import *
+from io import BytesIO
+from os import getenv
 
+from dotenv import load_dotenv
+from flask import (
+    Flask,
+    flash,
+    make_response,
+    redirect,
+    render_template,
+    request,
+    send_file,
+    session,
+)
+from werkzeug.security import check_password_hash, generate_password_hash
+
+from app.helpers import *
 
 # Create the app
 app = Flask(__name__)
 
 
-#===========================================================
+# ===========================================================
 # App Routes Handlers
-#===========================================================
+# ===========================================================
 
-#-----------------------------------------------------------
+
+# -----------------------------------------------------------
 # Welcome page
-#-----------------------------------------------------------
+# -----------------------------------------------------------
 @app.get("/")
 def show_welcome():
     return render_template("pages/welcome.jinja")
 
-#-----------------------------------------------------------
-# singnup page
-#-----------------------------------------------------------
+
+# -----------------------------------------------------------
+# Signup page
+# -----------------------------------------------------------
 @app.get("/user/new")
-def show_singnup_form():
+def show_signup_form():
     return render_template("pages/user_form.jinja")
 
-#-----------------------------------------------------------
-# handle user singup
-#-----------------------------------------------------------
-@app.post("/user")
-def prosess_new_user():
-  forename = request.form.get('forename', '').strip()
-  surname  = request.form.get('surname',  '').strip()
-  username = request.form.get('username', '').strip().lower()
-  password = request.form.get('password', '').strip()
 
-  with connect_db() as db:
+# -----------------------------------------------------------
+# Handle user signup
+# -----------------------------------------------------------
+@app.post("/user")
+def process_new_user():
+    forename = request.form.get("forename", "").strip()
+    surname = request.form.get("surname", "").strip()
+    username = request.form.get("username", "").strip().lower()
+    password = request.form.get("password", "").strip()
+
+    with connect_db() as db:
         sql = "SELECT id FROM users WHERE username=?"
         params = (username,)
         user = db.execute(sql, params).fetchone()
@@ -65,23 +78,26 @@ def prosess_new_user():
         flash("Account created. Please login", "success")
         return redirect("/login")
 
-#-----------------------------------------------------------
-# get login route
-#-----------------------------------------------------------
+
+# -----------------------------------------------------------
+# Login page
+# -----------------------------------------------------------
 @app.get("/login")
-def show_login_user():
-    return render_template("pages/login.jinja")
-#-----------------------------------------------------------
-# login post route  
-#-----------------------------------------------------------  
+def show_login_form():
+    return render_template("pages/login_form.jinja")
+
+
+# -----------------------------------------------------------
+# Handle user login
+# -----------------------------------------------------------
 @app.post("/login")
-def login_user():
-    username = request.form.get('username', '').strip().lower()
-    password = request.form.get('password', '').strip()
+def process_user_login():
+    username = request.form.get("username", "").strip().lower()
+    password = request.form.get("password", "").strip()
 
     with connect_db() as db:
         sql = """
-            SELECT id, forename, surname, password_hash
+            SELECT id, username, forename, surname, password_hash
             FROM users
             WHERE username=?
         """
@@ -99,99 +115,70 @@ def login_user():
         session["logged_in"] = True
         session["user"] = {
             "id":       user["id"],
-            "username": username,
+            "username": user["username"],
             "forename": user["forename"],
             "surname":  user["surname"],
         }
 
         flash("Login successful", "success")
-        return redirect("/")  
-#------------------------------------------------------------------
-# admin login 
-#------------------------------------------------------------------
-@app.post("/login")
-def login_admin():
-    password = request.form.get('password', '').strip()
-
-    load_dotenv()
-    ADMIN_PASSWORD = getenv("ADMIN_PASSWORD", "")
-    if not ADMIN_PASSWORD:
-        flash(f"No admin password set!", "error")
         return redirect("/")
 
-    if password == ADMIN_PASSWORD:
-        session["logged_in"] = True
-        flash(f"Login successful", "success")
-        return redirect("/")
-    else:
-        session.clear()
-        flash(f"Incorrect password", "error")
-        return redirect("/")                
-#-----------------------------------------------------------
-# logout route
-#-----------------------------------------------------------
+
+# -----------------------------------------------------------
+# Handle user logout
+# -----------------------------------------------------------
 @app.get("/logout")
-def logout_admin():
+def handle_logout():
     session.clear()
     flash(f"You have been logged out", "success")
-    return redirect("/")        
-#-----------------------------------------------------------
-# Creature list page - Show all the 
-#-----------------------------------------------------------
-@app.get("/creatures")
-def show_all_creatures():
+    return redirect("/")
+
+
+# -----------------------------------------------------------
+# Message list page - Show all the messages
+# -----------------------------------------------------------
+@app.get("/messages")
+def show_all_messages():
     with connect_db() as db:
         sql = """
-            SELECT id, species, name
-            FROM creatures
+            SELECT
+                messages.id AS mid,
+                messages.title,
+                messages.body,
+                users.id AS uid,
+                users.username,
+                users.forename,
+                users.surname
+            FROM messages
+            JOIN users on messages.user_id = users.id
+            ORDER BY mid DESC
         """
         params = ()
-        creatures = db.execute(sql, params).fetchall()
+        messages = db.execute(sql, params).fetchall()
 
-        return render_template("pages/creature_list.jinja", creatures=creatures)
-#----------------------------------------------------------
-#Add the @login_required decorator to required routes
-#----------------------------------------------------------
-@app.get("/admin")
-@login_required
-def admin_page():
-    # Can only access this route if logged in
-    ...
-#----------------------------------------------------------
-# message getting
-#-----------------------------------------------------------
+        return render_template("pages/message_list.jinja", messages=messages)
+
+
+# -----------------------------------------------------------
+# New message page
+# -----------------------------------------------------------
 @app.get("/message/new")
-@login_required
-def message_page():
+# @login_required
+def show_message_form():
     return render_template("pages/message_form.jinja")
 
-#----------------------------------------------------------
-# message posting
-#-----------------------------------------------------------
+
+# -----------------------------------------------------------
+# Handle new message
+# -----------------------------------------------------------
 @app.post("/message")
-def add_note():
-    # Get form data
-    title    = request.form.get('title', '').strip()
-    body     = request.form.get('body', '').strip()
+# @login_required
+def process_new_message():
+    title = request.form.get("title", "").strip()
+    body = request.form.get("body", "").strip()
 
-    # Validate data
-    if not title:
-        flash("Title is required", "error")
-        return redirect("/message/new")
-
-    if len(title) > 40:
-        flash("Title is too long (max 40 chars)", "error")
-        return redirect("/message/new")
-
-
-    # Escape text inputs
-    title = html.escape(title)
-    body = html.escape(body)
-
-    # User ID is in the session
     user_id = session["user"]["id"]
 
-    # Add to the database
     with connect_db() as db:
         sql = """
             INSERT INTO messages (title, body, user_id)
@@ -200,17 +187,86 @@ def add_note():
         params = (title, body, user_id)
         db.execute(sql, params)
 
-        flash(f"Message added")
+        flash("Message posted", "success")
         return redirect("/messages")
 
-#-----------------------------------------------------------
-# message obtaining
-#-----------------------------------------------------------
-@app.get("/message")
 
-#-----------------------------------------------------------
+# -----------------------------------------------------------
+# Message edit page
+# -----------------------------------------------------------
+@app.get(f"/message/<int:id>/edit")
+@login_required
+def show_edit_message_form(id):
+    with connect_db() as db:
+        sql = """
+            SELECT id, title, body, user_id FROM messages WHERE id=?
+        """
+        params = (id,)
+        message = db.execute(sql, params).fetchone()
+
+        if message and message["user_id"] == session["user"]["id"]:
+            return render_template("pages/message_edit_form.jinja", message=message)
+
+        flash("Invalid message", "error")
+        return redirect("/messages")
+
+
+# -----------------------------------------------------------
+# Handle new message
+# -----------------------------------------------------------
+@app.post("/message/<int:id>/update")
+@login_required
+def process_edited_message(id):
+    title = request.form.get("title", "").strip()
+    body = request.form.get("body", "").strip()
+
+    user_id = session["user"]["id"]
+
+    with connect_db() as db:
+        sql = """
+            UPDATE messages SET
+                title = ?,
+                body = ?
+            WHERE id = ? AND user_id = ?
+        """
+        params = (title, body, id, user_id)
+        db.execute(sql, params)
+
+        flash("Message updated", "success")
+        return redirect("/messages")
+
+
+# -----------------------------------------------------------
+# Message delete handling
+# -----------------------------------------------------------
+@app.get(f"/message/<int:id>/delete")
+@login_required
+def process_delete_message(id):
+    with connect_db() as db:
+        sql = """
+            SELECT user_id FROM messages WHERE id=?
+        """
+        params = (id,)
+        message = db.execute(sql, params).fetchone()
+
+        if message and message["user_id"] == session["user"]["id"]:
+
+            sql = """
+                DELETE FROM messages WHERE id=?
+            """
+            params = (id,)
+            db.execute(sql, params)
+
+            flash("Message deleted", "success")
+            return redirect("/messages")
+
+        flash("Invalid message", "error")
+        return redirect("/messages")
+
+
+# -----------------------------------------------------------
 # Help page - Show some help
-#-----------------------------------------------------------
+# -----------------------------------------------------------
 @app.get("/help")
 def show_help():
 
@@ -222,9 +278,9 @@ def show_help():
     return render_template("pages/help.jinja")
 
 
-#===========================================================
+# ===========================================================
 # Configure the app
-#===========================================================
+# ===========================================================
 load_dotenv()
 app.config.from_prefixed_env()
 init_logging(app)
@@ -233,4 +289,3 @@ init_date_filters(app)
 init_error_handlers(app)
 init_database()
 register_commands(app)
-

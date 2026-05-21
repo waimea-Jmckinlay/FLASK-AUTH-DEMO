@@ -1,0 +1,61 @@
+{#=====================================================
+  Message List page
+=====================================================#}
+
+{% extends 'pages/base.jinja' %}
+
+
+{% block content %}
+
+    <h2>Messages</h2>
+
+    {% if session.logged_in %}
+        <p><a class="button" href="/message/new">Post a Message</a></p>
+    {% endif %}
+
+    <section id="message-list">
+
+        {% for message in messages %}
+
+            <div class="message-item">
+                <header>
+                    <h3>{{ message.title }}</h3>
+                </header>
+
+                <p class="message-body">{{ message.body }}</p>
+
+                <footer>
+                    <p class="author">Posted by <strong>{{ message.forename }} {{ message.surname }}</strong> ({{ message.username }})</p>
+
+                    {% if session.logged_in and message.uid == session.user.id %}
+
+                        <a
+                            class="button"
+                            title="Edit message"
+                            href="/message/{{ message.mid }}/edit"
+                        >
+                            <i data-lucide="pen"></i>
+                        </a>
+
+                        <a
+                            class="button"
+                            title="Delete message"
+                            onclick="return confirm('Really delete?')"
+                            href="/message/{{ message.mid }}/delete"
+                        >
+                            <i data-lucide="trash"></i>
+                        </a>
+
+                    {% endif %}
+                </footer>
+            </div>
+
+        {% else %}
+
+            <p>No Messages!</p>
+
+        {% endfor %}
+
+    </section>
+
+{% endblock %}

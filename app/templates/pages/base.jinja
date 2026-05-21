@@ -8,14 +8,11 @@
 <html lang="en" data-theme="light">
 
 <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+
 
 	<title>Creatures {% block title %}{% endblock %}</title>
 
-    <link rel="icon" href="/static/images/icon.svg">
 
-    <script src="/static/js/utils.js"></script>
 
     <link rel="stylesheet" href="/static/css/reset.css">
     <link rel="stylesheet" href="/static/css/messages.css">
@@ -25,28 +22,29 @@
 <body>
 
     <header>
-        <a href="/">
-            <img src="/static/images/icon.svg" alt="Creature Icon" class="logo">
-        </a>
+ 
 
-        <h1>Login</h1>
+        <h1>Messages</h1>
+
+        <span class="greeting">
+            {% if session.logged_in %}
+                Welcome, <strong>{{ session.user.forename }}</strong>!
+            {% else %}
+                Welcome, guest!
+            {% endif %}
+        </span>
 
         <nav>
-            <a href="/">Home</a>
-            <a href="/user/new">make account</a>
-        {% if session.logged_in %}
-            Welcome, {{ session.user.forename }}!
-            <a href="/message/new">message</a>
-            <a href="/logout">Logout</a>
-        {% else %}
-            <a href="/login">Login</a>
-            <a href="/user/new">Sign-Up</a>
-        {% endif %}
+            <a href="/messages">Messages</a>
+
+            {% if session.logged_in %}
+                <a href="/message/new">Post a Message</a>
+                <a href="/logout">Logout</a>
+            {% else %}
+                <a href="/login">Login</a>
+                <a href="/user/new">Sign-Up</a>
+            {% endif %}
         </nav>
-
-
-       
-
     </header>
 
     {# Show flash messages from any previous events #}
@@ -59,7 +57,10 @@
 
     </main>
 
+    <script>
+        lucide.createIcons();
+    </script>
+
 </body>
 
 </html>
-
