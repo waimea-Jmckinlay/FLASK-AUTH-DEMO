@@ -1,0 +1,34 @@
+{#=====================================================
+  Help page
+=====================================================#}
+
+{% extends 'pages/base.jinja' %}
+
+
+{% block content %}
+
+<article>
+
+    <form method="post" action="/message/message.id/update">
+        <h3>Edit Note</h3>
+
+        <label>
+            Title
+            <input name="title" type="text" value="{{ message.title }}" required>
+        </label>
+
+        <label>
+            Body
+            <textarea name="body" required>{{ message.body }}</textarea>
+        </label>
+
+       
+
+        <button>Update message</button>
+    </form>
+
+</article>
+
+
+{% endblock %}
+

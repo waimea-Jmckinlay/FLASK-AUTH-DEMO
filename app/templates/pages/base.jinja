@@ -35,6 +35,7 @@
         </span>
 
         <nav>
+             
             <a href="/messages">Messages</a>
 
             {% if session.logged_in %}
@@ -48,7 +49,7 @@
     </header>
 
     {# Show flash messages from any previous events #}
-    {% include "partials/messages.jinja" %}
+
 
     <main>
 
