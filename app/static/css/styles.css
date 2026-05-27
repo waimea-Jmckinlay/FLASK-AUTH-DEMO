@@ -4,25 +4,28 @@
 ===========================================================*/
 
 :root {
-    --base-col:         #305274;
-    --accent-col:       #e43749;
+    --base-col:         #1433e2a8;
+    --accent-col:       #e43748f3;
 
-    --base-col-lighter: color-mix(in srgb, var(--base-col), #fff 70%);
-    --base-col-light:   color-mix(in srgb, var(--base-col), #fff 60%);
-    --base-col-dark:    color-mix(in srgb, var(--base-col), #000 30%);
-    --base-col-darker:  color-mix(in srgb, var(--base-col), #000 60%);
-    --base-col-darkest: color-mix(in srgb, var(--base-col), #000 70%);
+    --base-col-lightest: color-mix(in srgb, var(--base-col), #fff 90%);
+    --base-col-lighter:  color-mix(in srgb, var(--base-col), #fff 70%);
+    --base-col-light:    color-mix(in srgb, var(--base-col), #fff 60%);
+    --base-col-dark:     color-mix(in srgb, var(--base-col), #000 20%);
+    --base-col-darker:   color-mix(in srgb, var(--base-col), #000 60%);
+    --base-col-darkest:  color-mix(in srgb, var(--base-col), #000 90%);
 
-    --text-col:         #000;
-    --text-col-inv:     #fff;
+    --text-col:         var(--base-col-darkest);
+    --text-col-inv:     var(--base-col-lightest);
 
     --page-bg:          var(--base-col-lighter);
+    --page-header-bg:   var(--base-col-dark);
 
     --panel-bg:         var(--base-col-light);
     --panel-header-bg:  var(--base-col-dark);
 
-    --border-col:       var(--base-col-darker);
+    --border-col:       var(--base-col-darkest);
     --border-radius:    0.5rem;
+    --border-radius-sm: 0.25rem;
 
     --drop-shadow:      0 0.25rem 1rem #0004;
 
@@ -32,7 +35,6 @@
     --button-col:       var(--text-col-inv);
     --button-shadow:    0 0.1rem 0.2rem #0004;
     --button-shadow-up: 0 0.2rem 0.3rem #0008;
-
 
     --padding-lg:       2rem;
     --padding:          1rem;
@@ -73,7 +75,8 @@ main {
     }
 
     .button.home-page {
-        display: block;
+        font-size: 1.5rem;
+        display: flex;
         width: fit-content;
         margin: var(--gap-lg) auto;
     }
@@ -87,10 +90,16 @@ body > header {
     gap: var(--gap);
     align-items: center;
     padding: var(--padding);
+    background-color: var(--page-header-bg);
+    color: var(--text-col-inv);
+    border-bottom: 3px solid var(--border-col);
+    box-shadow: var(--drop-shadow);
+    position: sticky;
+    top: 0;
 
     .logo {
-        width: 2rem;
-        height: 2rem;
+        width: 3rem;
+        height: 3rem;
     }
 
     h1 {
@@ -119,6 +128,9 @@ main > h1.welcome {
     font-size: 5rem;
     text-align: center;
     margin-block: 5rem;
+
+    
+
 }
 
 
@@ -126,6 +138,9 @@ main > h2 {
     font-size: 2rem;
     text-align: center;
     margin-block: 2rem;
+
+
+
 }
 
 
@@ -153,8 +168,8 @@ form {
         input, textarea {
             width: 100%;
             border: 3px solid var(--border-col);
-            border-radius: 0.25rem;
-            padding: 0.25rem 0.5rem;
+            border-radius: var(--border-radius-sm);
+            padding: var(--padding-sm);
         }
     }
 }
@@ -168,14 +183,26 @@ form {
     box-shadow: var(--button-shadow);
     color: var(--text-col-inv);
     border-radius: 0.5em;
-    padding: 0.5em 1em;
+    padding: 0.5em 0.6em;
     text-decoration: none;
     transition: all 250ms;
+    display: inline-flex;
+    gap: var(--gap-sm);
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 
     &:hover {
         filter: brightness(1.1);
         box-shadow: var(--button-shadow-up);
     }
+}
+
+.button.new-message {
+    position: fixed;
+    right: max(3vw, var(--padding));
+    top: calc(5rem + max(3vw, var(--padding)));
+    font-size: 2rem;
 }
 
 
@@ -184,6 +211,7 @@ form {
 [data-lucide] {
     height: 1.25em;
     width:  1.25em;
+    display: inline-block;
 }
 
 
@@ -198,7 +226,7 @@ form {
     .message-item {
         background-color: var(--panel-bg);
         border: 3px solid var(--border-col);
-        border-radius: 0.5rem;
+        border-radius: var(--border-radius);
         box-shadow: var(--drop-shadow);
         overflow: hidden;
 
@@ -215,6 +243,10 @@ form {
 
         .message-body {
             padding: var(--padding);
+
+            p:not(:last-of-type) {
+                margin-bottom: var(--gap);
+            }
         }
 
         footer {
@@ -231,5 +263,3 @@ form {
         }
     }
 }
-
-

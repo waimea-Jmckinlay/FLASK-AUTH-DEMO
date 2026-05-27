@@ -1,5 +1,5 @@
 {#=====================================================
-  Help page
+  Message Edit page
 =====================================================#}
 
 {% extends 'pages/base.jinja' %}
@@ -7,28 +7,22 @@
 
 {% block content %}
 
-<article>
+    <h2>Edit a Message</h2>
 
-    <form method="post" action="/message/message.id/update">
-        <h3>Edit Note</h3>
+    <form method="post" action="/message/{{ message.id }}/update">
 
         <label>
-            Title
-            <input name="title" type="text" value="{{ message.title }}" required>
+            Message Title
+            <input type="text" name="title" required value="{{ message.title }}">
         </label>
 
         <label>
-            Body
-            <textarea name="body" required>{{ message.body }}</textarea>
+            Message Body
+            <textarea name="body" rows="8" required>{{ message.body }}</textarea>
         </label>
 
-       
-
-        <button>Update message</button>
+        <button>Update Message</button>
     </form>
-
-</article>
-
 
 {% endblock %}
 

@@ -36,9 +36,10 @@
 
         <nav>
              
-            <a href="/messages">Messages</a>
+             
 
             {% if session.logged_in %}
+                <a href="/">Home</a>
                 <a href="/message/new">Post a Message</a>
                 <a href="/logout">Logout</a>
             {% else %}

@@ -1,6 +1,6 @@
 # ===========================================================
-# APP NAME HERE
-# By YOUR NAME HERE
+# message
+# By jayden.Mckinlay
 # ===========================================================
 
 import html
@@ -138,7 +138,6 @@ def handle_logout():
 # Message list page - Show all the messages
 # -----------------------------------------------------------
 @app.get("/messages")
-@login_required
 def show_all_messages():
     with connect_db() as db:
         sql = """
@@ -164,7 +163,7 @@ def show_all_messages():
 # New message page
 # -----------------------------------------------------------
 @app.get("/message/new")
-@login_required
+# @login_required
 def show_message_form():
     return render_template("pages/message_form.jinja")
 
@@ -173,7 +172,7 @@ def show_message_form():
 # Handle new message
 # -----------------------------------------------------------
 @app.post("/message")
-@login_required
+# @login_required
 def process_new_message():
     title = request.form.get("title", "").strip()
     body = request.form.get("body", "").strip()
@@ -195,7 +194,7 @@ def process_new_message():
 # -----------------------------------------------------------
 # Message edit page
 # -----------------------------------------------------------
-@app.get(f"/messages/<int:id>/edit")
+@app.get(f"/message/<int:id>/edit")
 @login_required
 def show_edit_message_form(id):
     with connect_db() as db:
@@ -209,13 +208,13 @@ def show_edit_message_form(id):
             return render_template("pages/edit_message_form.jinja", message=message)
 
         flash("Invalid message", "error")
-        return redirect("messages")
+        return redirect("/messages")
 
 
 # -----------------------------------------------------------
 # Handle new message
 # -----------------------------------------------------------
-@app.post("/messages/<int:id>/update")
+@app.post("/message/<int:id>/update")
 @login_required
 def process_edited_message(id):
     title = request.form.get("title", "").strip()
@@ -234,7 +233,7 @@ def process_edited_message(id):
         db.execute(sql, params)
 
         flash("Message updated", "success")
-        return redirect("/message")
+        return redirect("/messages")
 
 
 # -----------------------------------------------------------

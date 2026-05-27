@@ -21,18 +21,18 @@ class UserTable:
 
     SCHEMA = """
         CREATE TABLE users (
-            id      INTEGER PRIMARY KEY AUTOINCREMENT,
-            forename TEXT NOT NULL,
-            surname    TEXT NOT NULL,
-            username   Text NOT NULL UNIQUE,
+            id            INTEGER PRIMARY KEY AUTOINCREMENT,
+            forename      TEXT NOT NULL,
+            surname       TEXT NOT NULL,
+            username      TEXT NOT NULL,
             password_hash TEXT NOT NULL
         )
     """
 
     SEED_DATA = """
-INSERT INTO user(forname, surname, username, password_hash)
-VALUES ("Test", "User", "test",
-"scrypt:32768:8:1$n7eJTucLbaGmUpAM$c1776374a8d456a6eaf61bccc08db5e1fcc4ff3b3983d364c45ab13074255eeae0a393afb11f99a9fe63fb1d980992ace17a72ba70324523b11e92e36cbe4252" )
+        INSERT INTO users (forename, surname, username, password_hash)
+        VALUES ("Jimmy", "Tickles", "test", "scrypt:32768:8:1$n7eJTucLbaGmUpAM$c1776374a8d456a6eaf61bccc08db5e1fcc4ff3b3983d364c45ab13074255eeae0a393afb11f99a9fe63fb1d980992ace17a72ba70324523b11e92e36cbe4252"),
+               ("Steve", "Copley",  "cpy",   "scrypt:32768:8:1$n7eJTucLbaGmUpAM$c1776374a8d456a6eaf61bccc08db5e1fcc4ff3b3983d364c45ab13074255eeae0a393afb11f99a9fe63fb1d980992ace17a72ba70324523b11e92e36cbe4252")
     """
 
 
@@ -44,26 +44,20 @@ class MessageTable:
         CREATE TABLE messages (
             id      INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
-            title    TEXT NOT NULL,
-            body   Text NOT NULL,
+            title   TEXT NOT NULL,
+            body    TEXT NOT NULL,
 
-
-             FOREIGN KEY(user_id) REFERENCES user(id)
+            FOREIGN KEY(user_id) REFERENCES users(id)
         )
     """
 
     SEED_DATA = """
-INSERT INTO messages (title, body,  user_id)
-VALUES ("Welcome!",        "This is a demo application", 1),
-       ("Getting Started", "Use this template to start", 1),
-       ("Pinned Note",     "Pinned notes appear at top", 1),
-       ("Sample Note",     "This is just a sample note", 1),
-       ("Sample Note",     "This is just a sample note", 1),
-       ("Sample Note",     "This is just a sample note", 1) 
+        INSERT INTO messages (user_id, title, body)
+        VALUES (1, "Yo!", "First!"),
+               (1, "I'm sad and lonely", "Plz like this message!"),
+               (2, "I love cheese", "Can't get enough of the yellow stuff!")
     """
 
-
-# Add more table classes here...
 
 
 
@@ -85,6 +79,4 @@ VALUES ("Welcome!",        "This is a demo application", 1),
 TABLES = [
     UserTable,
     MessageTable,
-    # Add more tables here...
 ]
-
