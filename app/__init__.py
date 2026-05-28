@@ -97,8 +97,8 @@ def process_user_login():
 
     with connect_db() as db:
         sql = """
-            SELECT id, username, forename, surname, password_hash
-            FROM users
+            SELECT id, username, forename, surname, password_hash, admin
+            FROM users 
             WHERE username=?
         """
         params = (username,)
@@ -118,9 +118,11 @@ def process_user_login():
             "username": user["username"],
             "forename": user["forename"],
             "surname":  user["surname"],
+            "admin": user["admin"]
         }
 
         flash("Login successful", "success")
+
         return redirect("/")
 
 
@@ -132,7 +134,9 @@ def handle_logout():
     session.clear()
     flash(f"You have been logged out", "success")
     return redirect("/")
-
+#------------------------------------------------------------
+#admin login
+#------------------------------------------------------------
 
 # -----------------------------------------------------------
 # Message list page - Show all the messages

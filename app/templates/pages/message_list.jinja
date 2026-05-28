@@ -27,7 +27,7 @@
                 <footer>
                     <p class="author">Posted by <strong>{{ message.forename }} {{ message.surname }}</strong> ({{ message.username }})</p>
 
-                    {% if session.logged_in and message.uid == session.user.id %}
+                    {% if session.logged_in and message.uid == session.user.id or session.user == admin %}
 
                         <a
                             class="button"
